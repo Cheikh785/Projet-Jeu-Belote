@@ -48,33 +48,34 @@ public class Joueur {
 
     public Carte play(int signe) {
         if (this.cptCartes > 0) {
-            int i=0, k=13;
-            while (i < this.tabCartes.length && this.tabCartes[i] == null)
-                i++;
-            if (i < this.tabCartes.length)
-                k = i-1;
-            else return null;
-
-            k = 11;
-            while (k < this.tabCartes.length && this.tabCartes[k].getSigne() != signe)
-                k++;
-            if (k < this.tabCartes.length) {
-                Carte tmpCarte = this.tabCartes[i];
-                this.tabCartes[i] = null;
-                this.cptCartes--;
-                return tmpCarte;
-            } else {
-                int j=0;
-                while (j < this.tabCartes.length && this.tabCartes[j] == null)
-                    j++;
-                if (j < this.tabCartes.length) {
-                    Carte tmpCarte = this.tabCartes[j];
-                    this.tabCartes[j] = null;
-                    this.cptCartes--;
-                    return tmpCarte;
+            int i=0, k=0;
+            while (i < this.tabCartes.length) {
+                if (this.tabCartes[i] != null) {
+                    k=i;
+                    while (k < this.tabCartes.length && this.tabCartes[k].getSigne() != signe)
+                        k++;
+                    if (k < this.tabCartes.length) {
+                        Carte tmpCarte = this.tabCartes[i];
+                        this.tabCartes[i] = null;
+                        this.cptCartes--;
+                        return tmpCarte;
+                    } else {
+                        int j=0;
+                        while (j < this.tabCartes.length && this.tabCartes[j] == null)
+                            j++;
+                        if (j < this.tabCartes.length) {
+                            Carte tmpCarte = this.tabCartes[j];
+                            this.tabCartes[j] = null;
+                            this.cptCartes--;
+                            return tmpCarte;
+                        }
+                        else {
+                            System.out.println("Cartes épuisées !!! Toutes les cartes ont été jouées.");
+                        }
+                    }
                 }
                 else {
-                    System.out.println("Cartes épuisées !!! Toutes les cartes ont été jouées.");
+                    i++;
                 }
             }
         } else {

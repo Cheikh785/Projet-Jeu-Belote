@@ -9,9 +9,9 @@ public class Carte {
         this.valeur = valeur;
     }
 
-    public void printOut() {
+    public String printOut() {
         String[] tabSigne = {"Trèffle", "Carreau", "Coeur", "Pique"};
-        System.out.print(this.nom + " " + tabSigne[this.signe] + " - ");
+        return (this.nom + " " + tabSigne[this.signe]);
     }
 
     public int getSigne() {

@@ -1,7 +1,9 @@
+import jdk.swing.interop.SwingInterOpUtils;
+
 import java.util.Random;
 
 public class Belotte {
-    private Carte[] cartes;
+    private final Carte[] cartes;
     private Joueur[] joueurs;
 
     public Belotte() {
@@ -107,8 +109,8 @@ public class Belotte {
 //    }
 
     public boolean carteEstDans(int[] carteAjouter, int numCarte) {
-        for (int i = 0; i < carteAjouter.length; i++) {
-            if (carteAjouter[i] == numCarte) {
+        for (int j : carteAjouter) {
+            if (j == numCarte) {
                 return true;
             }
         }
@@ -128,34 +130,40 @@ public class Belotte {
 
 
     public static void main(String[] args) {
+        System.out.println("\n\n****************************************************************** JEU BELOTTE | VERSION 1.0 **************************************************************");
+        System.out.println("\n\t\t\t\t\t\t\t\t\t <-DÉBUT->");
         Belotte belotte = new Belotte();
 
-        System.out.println("Liste des joueurs : ");
+        System.out.println("\tListe des joueurs : ");
+        System.out.print("\t");
         for (int i=0; i < 4; i++)
-            System.out.println(belotte.joueurs[i].nom);
+            System.out.print(belotte.joueurs[i].nom + "\t-\t");
 
+        System.out.println("\n");
         for (int i=0; i < belotte.joueurs.length; i++) {
-            System.out.println("\nListe des cartes de : " + belotte.joueurs[i].nom);
-            for (int j = 0; j < belotte.joueurs[i].tabCartes.length; j++)
-                if (belotte.joueurs[i].tabCartes[j] != null)
-                    belotte.joueurs[i].tabCartes[j].printOut();
+            System.out.println("\tListe des cartes de " + belotte.joueurs[i].nom);
+            for (int j = 0; j < belotte.joueurs[i].tabCartes.length; j++) {
+                System.out.print("\t");
+                if (belotte.joueurs[i].tabCartes[j] != null) {
+                    System.out.print(belotte.joueurs[i].tabCartes[j].printOut());
+                    System.out.print(" - ");
+                }
+            }
             System.out.println("\n");
         }
         Joueur doudou = belotte.joueurs[0];
         Joueur fatou = belotte.joueurs[1];
         Joueur lamine = belotte.joueurs[2];
         Joueur dieynaba = belotte.joueurs[3];
-        System.out.println("\n\n"+ doudou.nom + " : " +doudou.tabCartes.length + " \n" +
-                                fatou.nom + " : " + fatou.cptCartes + "\n" +
-                                lamine.nom + " : " + lamine.cptCartes + "\n" +
-                                dieynaba.nom + " : " + dieynaba.cptCartes + "\n");
 
-        System.out.println("\n\n *****************************On commence le jeu***************************** \n");
+        System.out.println("\n\n********************************************************************** ON COMMENCE **********************************************************************");
 
         int premierSigne = doudou.jouerEnPremier().getSigne();
-        int j=0;
+        int j=0, numGagnant=0;
 
         while (doudou.cptCartes > 1) {
+            int maxValeurCarte = belotte.joueurs[numGagnant].jouerEnPremier().getValeur();
+
             Carte carteDoudou = doudou.play(premierSigne);
             Carte carteFatou = fatou.play(premierSigne);
             Carte carteLamine = lamine.play(premierSigne);
@@ -163,35 +171,49 @@ public class Belotte {
 
             Carte[] tourCartes = new Carte[4];
             tourCartes[0] = carteDoudou;
-            tourCartes[2] = carteFatou;
-            tourCartes[1] = carteLamine;
+            tourCartes[1] = carteFatou;
+            tourCartes[2] = carteLamine;
             tourCartes[3] = carteDieynabe;
 
-            int numGagnant = 0, i = 0;
-            int maxValeurCarte = carteDoudou.getValeur();
+            int i = 0;
             while (i < 4) {
-                if (tourCartes[i].getValeur() > maxValeurCarte) {
-                    if (tourCartes[i].getSigne() == premierSigne) {
-                        maxValeurCarte = tourCartes[i].getValeur();
+                if (tourCartes[i].getSigne() == premierSigne) {
+                    if (tourCartes[i].getValeur() >= maxValeurCarte) {
                         numGagnant = i;
                     }
                 }
                 i++;
             }
-//            System.out.println(maxValeurCarte);
-//            System.out.println(carteDoudou.getValeur());
-//            System.out.println(carteFatou.getValeur());
-//            System.out.println(carteLamine.getValeur());
-//            System.out.println(carteDieynabe.getValeur());
-
             belotte.joueurs[numGagnant].tourGagnant(tourCartes);
             premierSigne = belotte.joueurs[numGagnant].jouerEnPremier().getSigne();
+
+            System.out.println("\n\t" + doudou.nom + " a joué la carte : " + carteDoudou.printOut());
+            System.out.println("\t" + fatou.nom + " a joué la carte : " + carteFatou.printOut());
+            System.out.println("\t" + lamine.nom + " a joué la carte : " + carteLamine.printOut());
+            System.out.println("\t" + dieynaba.nom + " a joué la carte : " + carteDieynabe.printOut());
+
+            System.out.println("\n\t   -Le gagnant de ce tour est " + belotte.joueurs[numGagnant].nom + ". Il a " + belotte.joueurs[numGagnant].score + " points maintenant. \n\n\n");
         }
 
-        System.out.println("\n=================================Score finale : =================================");
-        System.out.println("\n"+ doudou.nom + " : " +doudou.score + " \n" +
-                fatou.nom + " : " + fatou.score + "\n" +
-                lamine.nom + " : " + lamine.score + "\n" +
-                dieynaba.nom + " : " + dieynaba.score + "\n");
+        Joueur gagnantFinale = belotte.joueurs[0];
+        for (int i = 0; i < 4; i++) {
+            if (belotte.joueurs[i].score >= gagnantFinale.score) {
+                gagnantFinale = belotte.joueurs[i];
+            }
+        }
+
+        System.out.println("\n\t\t\t\t\t\t ================================= Score finale =================================");
+        System.out.println("\t\t\t\t\t\t|");
+        System.out.println("\t\t\t\t\t\t|\t\t\t\t" + doudou.nom + " : " +doudou.score + " \n" +
+                "\t\t\t\t\t\t|\t\t\t\t" + fatou.nom + " : " + fatou.score + "\n" +
+                "\t\t\t\t\t\t|\t\t\t\t" + lamine.nom + " : " + lamine.score + "\n" +
+                "\t\t\t\t\t\t|\t\t\t\t" + dieynaba.nom + " : " + dieynaba.score);
+        System.out.println("\t\t\t\t\t\t|");
+        System.out.println("\t\t\t\t\t\t ================================================================================");
+
+        System.out.println("\n\t\t\t\t\t\t\t| Le gagnant de cette partie est " + gagnantFinale.nom + " avec " + gagnantFinale.score + " points |");
+
+        System.out.println("\n\n\n \t\t\t\t\t\t\t\t\t\t<-Fin->");
+        System.out.println("\n\n****************************************************************** JEU BELOTTE | VERSION 1.0 **************************************************************");
     }
 }
