@@ -32,54 +32,99 @@ public class Joueur {
             System.out.println("Il n'y a plus de carte à jouer pour le joueur " + this.nom);
             return null;
         }
-//        Carte tmpCarte = this.tabCartes[0];
-//        this.tabCartes[0] = null;
-//        this.cptCartes--;
-//        return tmpCarte;
-//        return this.tabCartes[0];
-
-        while (j < this.tabCartes.length && this.tabCartes[j] == null)
-            j++;
-        if (j < this.tabCartes.length) {
-            return this.tabCartes[j];
+//        while (j < this.tabCartes.length && this.tabCartes[j] == null)
+//            j++;
+//        if (j < this.tabCartes.length) {
+//            return this.tabCartes[j];
+//        }
+        int indexMaxCarteTab = maxTab(this.tabCartes);
+        if (indexMaxCarteTab != -1) {
+            return this.tabCartes[indexMaxCarteTab];
         }
         return null;
     }
 
-    public Carte play(int signe) {
+    public Carte play(int signe, int val) {
         if (this.cptCartes > 0) {
-            int i=0, k=0;
-            while (i < this.tabCartes.length) {
-                if (this.tabCartes[i] != null) {
-                    k=i;
-                    while (k < this.tabCartes.length && this.tabCartes[k].getSigne() != signe)
-                        k++;
-                    if (k < this.tabCartes.length) {
-                        Carte tmpCarte = this.tabCartes[i];
-                        this.tabCartes[i] = null;
-                        this.cptCartes--;
-                        return tmpCarte;
-                    } else {
-                        int j=0;
-                        while (j < this.tabCartes.length && this.tabCartes[j] == null)
-                            j++;
-                        if (j < this.tabCartes.length) {
-                            Carte tmpCarte = this.tabCartes[j];
-                            this.tabCartes[j] = null;
-                            this.cptCartes--;
-                            return tmpCarte;
-                        }
-                        else {
-                            System.out.println("Cartes épuisées !!! Toutes les cartes ont été jouées.");
-                        }
+            int k=0, maxIndex = -1;
+            for (int i = 0; i < this.tabCartes.length; i++) {
+                if (tabCartes[i] != null) {
+                    if (this.tabCartes[i].getSigne() == signe && this.tabCartes[i].getValeur() > val) {
+                        maxIndex = i;
+                        if (this.tabCartes[i].getValeur() == 13)
+                            break;
                     }
                 }
-                else {
-                    i++;
-                }
+            }
+            if (maxIndex != -1) {
+                Carte carteTmp = this.tabCartes[maxIndex];
+                this.tabCartes[maxIndex] = null;
+                this.cptCartes--;
+                return carteTmp;
+            }
+
+            int minIndex = minTab(this.tabCartes);
+            if (minIndex != -1) {
+                Carte carteTmp = this.tabCartes[minIndex];
+                this.tabCartes[minIndex] = null;
+                this.cptCartes--;
+                return carteTmp;
             }
         } else {
             System.out.println("Cartes épuisées !!! Toutes les cartes ont été jouées.");
+        }
+        return null;
+    }
+
+    public int minTab(Carte[] tab) {
+        if (tab.length > 0 ) {
+            int min = 13, pos = 0;
+            for (int i = 1; i < tab.length; i++) {
+                if (tab[i] != null) {
+                    if (tab[i].getValeur() < min) {
+                        min = tab[i].getValeur();
+                        pos = i;
+                    }
+                }
+            }
+            return pos;
+        }
+        return -1;
+    }
+
+    public int maxTab(Carte[] tab) {
+        if (tab.length > 0) {
+            int max = 0, pos = 0;
+            for (int i = 0; i < tab.length; i++) {
+                if (tab[i] != null) {
+                    if (tab[i].getValeur() > max) {
+                        max = tab[i].getValeur();
+                        pos = i;
+                    }
+                }
+            }
+            return pos;
+        }
+        return -1;
+    }
+
+    public Carte firstPlay(int signe) {
+        int maxIndex = -1, maxVal = 0;
+        for (int i = 0; i < this.tabCartes.length; i++) {
+            if (tabCartes[i] != null) {
+                if (this.tabCartes[i].getSigne() == signe && this.tabCartes[i].getValeur() > maxVal) {
+                    maxVal = this.tabCartes[i].getValeur();
+                    maxIndex = i;
+                    if (this.tabCartes[i].getValeur() == 13)
+                        break;
+                }
+            }
+        }
+        if (maxIndex != -1) {
+            Carte carteTmp = this.tabCartes[maxIndex];
+            this.tabCartes[maxIndex] = null;
+            this.cptCartes--;
+            return carteTmp;
         }
         return null;
     }
