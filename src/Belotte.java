@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class Belotte {
     private final Carte[] cartes;
@@ -183,17 +183,34 @@ public class Belotte {
         int premierSigne = doudou.jouerEnPremier().getSigne();
         int j = 0, numGagnant = 0, maxValeurCarte = doudou.jouerEnPremier().getValeur();
 
-        while (doudou.cptCartes > 1) {
+        while (doudou.cptCartes > 0) {
             Carte carteDoudou;
+            Carte carteFatou;
+            Carte carteLamine;
+            Carte carteDieynabe;
             if (doudou.cptCartes == 13) {
                 carteDoudou = doudou.firstPlay(premierSigne);
                 maxValeurCarte = carteDoudou.getValeur();
+            } else if (numGagnant == 0) {
+                carteDoudou = doudou.play(premierSigne, 1);
             } else {
                 carteDoudou = doudou.play(premierSigne, maxValeurCarte);
             }
-            Carte carteFatou = fatou.play(premierSigne, maxValeurCarte);
-            Carte carteLamine = lamine.play(premierSigne, maxValeurCarte);
-            Carte carteDieynabe = dieynaba.play(premierSigne, maxValeurCarte);
+            if (numGagnant == 1) {
+                carteFatou = fatou.play(premierSigne, 1);
+            } else {
+                carteFatou = fatou.play(premierSigne, maxValeurCarte);
+            }
+            if (numGagnant == 2) {
+                carteLamine = lamine.play(premierSigne, 1);
+            } else {
+                carteLamine = lamine.play(premierSigne, maxValeurCarte);
+            }
+            if (numGagnant == 3) {
+                carteDieynabe = dieynaba.play(premierSigne, 1);
+            } else {
+                carteDieynabe = dieynaba.play(premierSigne, maxValeurCarte);
+            }
 
             Carte[] tourCartes = new Carte[4];
             tourCartes[0] = carteDoudou;
@@ -210,34 +227,28 @@ public class Belotte {
                 }
             }
             belotte.joueurs[numGagnant].tourGagnant(tourCartes);
-            premierSigne = belotte.joueurs[numGagnant].jouerEnPremier().getSigne();
-            maxValeurCarte = belotte.joueurs[numGagnant].jouerEnPremier().getValeur();
+            if (doudou.cptCartes > 0) {
+                premierSigne = belotte.joueurs[numGagnant].jouerEnPremier().getSigne();
+                maxValeurCarte = belotte.joueurs[numGagnant].jouerEnPremier().getValeur();
+            }
 
             System.out.println("\n\t" + doudou.nom + " a joué la carte : " + carteDoudou.printOut());
             System.out.println("\t" + fatou.nom + " a joué la carte : " + carteFatou.printOut());
             System.out.println("\t" + lamine.nom + " a joué la carte : " + carteLamine.printOut());
             System.out.println("\t" + dieynaba.nom + " a joué la carte : " + carteDieynabe.printOut());
 
-            System.out.println("premier signe : " + premierSigne);
-            System.out.println("num gagnant : " + numGagnant);
-            System.out.println("max carte : " + maxValeurCarte);
+//            System.out.println("premier signe : " + premierSigne);
+//            System.out.println("num gagnant : " + numGagnant);
+//            System.out.println("max carte : " + maxValeurCarte);
 
             System.out.println("\n\t   -Le gagnant de ce tour est " + belotte.joueurs[numGagnant].nom + ". Il a désormais " + belotte.joueurs[numGagnant].score + " points. \n\n\n");
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                System.out.println("Erreur rencontre : ");
+                e.printStackTrace();
+            }
         }
-
-//        System.out.println("max val carte " + maxValeurCarte);
-//        Carte carteDoudou = doudou.firstPlay(premierSigne);
-//        maxValeurCarte = carteDoudou.getValeur();
-//        Carte carteFatou = fatou.play(premierSigne, maxValeurCarte);
-//        Carte carteLamine = lamine.play(premierSigne, maxValeurCarte);
-//        Carte carteDieynabe = dieynaba.play(premierSigne, maxValeurCarte);
-//
-//        System.out.println("premier signe " + premierSigne);
-//        System.out.println("max val carte " + maxValeurCarte);
-//        System.out.println("doudou : signe = " + carteDoudou.getSigne() + " valeur = " + carteDoudou.getValeur());
-//        System.out.println("fatou : signe = " + carteFatou.getSigne() + " valeur = " + carteFatou.getValeur());
-//        System.out.println("lamine : signe = " + carteLamine.getSigne() + " valeur = " + carteLamine.getValeur());
-//        System.out.println("dieynaba : signe = " + carteDieynabe.getSigne() + " valeur = " + carteDieynabe.getValeur());
 
         Joueur gagnantFinale = belotte.joueurs[0];
         for (int i = 0; i < 4; i++) {
@@ -258,6 +269,6 @@ public class Belotte {
         System.out.println("\n\t\t\t\t\t\t\t| Le gagnant de cette partie est " + gagnantFinale.nom + " avec " + gagnantFinale.score + " points |");
 
         System.out.println("\n\n\n \t\t\t\t\t\t\t\t\t\t<-Fin->");
-        System.out.println("\n\n****************************************************************** JEU BELOTTE | VERSION 1.0 **************************************************************");
+        System.out.println("\n\n****************************************************************** JEU BELOTTE | VERSION 1.0 **************************************************************\n\n");
     }
 }
